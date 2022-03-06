@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Standard.Customer.Application;
 using Standard.Customer.Domain;
 using Standard.Customer.Domain.DTO;
+using Standard.Customer.SOR.Models.Responses;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -31,9 +32,9 @@ namespace Standard.Customer.SOR.Controllers
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetMany(string searchKeyword, int? page, int pageSize = 20)
+        public async Task<IActionResult> GetMany(string searchKeyword, int? page, int pageSize, string orderByColumn, string orderBy)
         {
-            var data = await _dataRepository.GetMany(searchKeyword, page, pageSize);
+            var data = await _dataRepository.GetMany(searchKeyword, page, pageSize, orderByColumn, orderBy);
             var customersResponse = _mapper.Map<List<CustomerDto>>(data);
             return Ok(customersResponse);
         }
@@ -67,7 +68,7 @@ namespace Standard.Customer.SOR.Controllers
             var customerPayload = _mapper.Map<CustomerEntity>(customerDto);
             var response = await _dataRepository.Add(customerPayload, CreateType.Create);
 
-            return Ok(response);
+            return Ok();
         }
     }
 }

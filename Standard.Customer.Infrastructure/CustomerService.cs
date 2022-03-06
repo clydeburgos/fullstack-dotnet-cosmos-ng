@@ -118,9 +118,22 @@ namespace Standard.Customer.Infrastructure
             var customerSingleRequest = await customerContainer.ReadItemAsync<CustomerEntity>(id, new PartitionKey(id));
             return customerSingleRequest;
         }
-        public async Task<IEnumerable<CustomerEntity>> GetMany(string searchKeyword, int ? page, int pageSize = 20)
+        public async Task<int> CountRecords()
         {
-            string query = BuildSelectQuery(searchKeyword, page, pageSize);
+            int count = 0;
+            string query = "SELECT VALUE COUNT(1) FROM c";
+            QueryDefinition queryDefinition = new QueryDefinition(query);
+            var queryResultSetIterator = this.customerContainer.GetItemQueryIterator<int>(queryDefinition);
+            while (queryResultSetIterator.HasMoreResults) {
+                FeedResponse<int> currentResultSet = await queryResultSetIterator.ReadNextAsync();
+                count = currentResultSet.FirstOrDefault();
+            }
+
+            return count;
+        }
+        public async Task<IEnumerable<CustomerEntity>> GetMany(string searchKeyword, int ? page, int pageSize = 20, string orderByColumn = "uniqueid", string orderBy = "ASC")
+        {
+            string query = BuildSimpleQuery(searchKeyword);
             QueryDefinition queryDefinition = new QueryDefinition(query);
             List<CustomerEntity> customers = new List<CustomerEntity>();
             FeedIterator<CustomerEntity> queryResultSetIterator = this.customerContainer.GetItemQueryIterator<CustomerEntity>(queryDefinition);
@@ -162,12 +175,36 @@ namespace Standard.Customer.Infrastructure
             // unique id will represent the id from json if it's migration
             entity.uniqueid = (createType == CreateType.Migrate ? entity.id : entity.uniqueid);
             // we will use the id property to be the unique identifier on cosmos
-            entity.id = Guid.NewGuid().ToString(); 
+            // entity.id = Guid.NewGuid().ToString(); 
         }
-        private string BuildSelectQuery(string searchKeyword, int? page, int pageSize = 20) {
-            string whereQuery = !string.IsNullOrEmpty(searchKeyword) ? $"WHERE c.last_name LIKE '%{searchKeyword}%' OR c.first_name LIKE '%{searchKeyword}%' OR c.email LIKE '%{searchKeyword}%'" : string.Empty;   
-            string query = @$"SELECT * FROM c { whereQuery } ORDER BY c.uniqueid OFFSET {((page ?? 1) - 1) * pageSize} LIMIT {pageSize}";
+
+        private string BuildSimpleQuery(string searchKeyword) {
+            string whereQuery = !string.IsNullOrEmpty(searchKeyword) ? $"WHERE c.last_name LIKE '%{searchKeyword}%' OR c.first_name LIKE '%{searchKeyword}%' OR c.email LIKE '%{searchKeyword}%'" : string.Empty;
+            string query = @$"SELECT * FROM c { whereQuery } ORDER BY c.uniqueid";
             return query;
+        }
+        private string BuildSelectQuery(string searchKeyword, int? page, int pageSize = 20, string orderByColumn = "uniqueid", string orderBy = "ASC") 
+        {
+            page = page == 0 ? 1 : page;
+
+            orderBy = OrderByTransform(orderBy);
+            orderByColumn = ColumnTransform(orderByColumn);
+
+            string whereQuery = !string.IsNullOrEmpty(searchKeyword) ? $"WHERE c.last_name LIKE '%{searchKeyword}%' OR c.first_name LIKE '%{searchKeyword}%' OR c.email LIKE '%{searchKeyword}%'" : string.Empty;   
+            string query = @$"SELECT * FROM c { whereQuery } ORDER BY c.{orderByColumn} {orderBy} OFFSET {((page ?? 1) - 1) * pageSize} LIMIT {pageSize}";
+            return query;
+        }
+        private string OrderByTransform(string orderBy = "ASC") {
+            orderBy = orderBy.ToLower().Contains("asc") ? "ASC" : orderBy;
+            orderBy = orderBy.ToLower().Contains("desc") ? "DESC" : orderBy;
+            return orderBy;
+        }
+
+        private string ColumnTransform(string orderByColumn)
+        {
+            orderByColumn = orderByColumn.ToLower().Contains("first_name") ? "firstName" : orderByColumn;
+            orderByColumn = orderByColumn.ToLower().Contains("last_name") ? "lastName" : orderByColumn;
+            return orderByColumn;
         }
     }
 }
