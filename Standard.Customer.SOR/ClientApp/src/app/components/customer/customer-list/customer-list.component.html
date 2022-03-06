@@ -1,0 +1,24 @@
+<!-- <div class="d-flex">
+  <input type="search" [(ngModel)]="searchKeyword"  placeholder="Search..." class="form-control w-50" /> &nbsp;
+  <button type="button" class="btn btn-sm btn-primary" (click)="search()">Search</button>
+</div> -->
+<br />
+<div *ngIf="isFetching" class="alert alert-secondary">Loading data, please wait...</div>
+<ejs-grid id="customerGrid" #customerGrid width="100%"
+    [dataSource]="customers" [allowPaging]="true" [allowSorting]="true" [allowFiltering]="true" [pageSettings]="pageSettings" [filterSettings]='filterOptions' 
+    (rowSelected)="rowSelected($event)">
+    <e-columns>
+        <e-column field='uniqueId' headerText='ID'></e-column>
+        <e-column field='firstName' headerText='First Name'></e-column>
+        <e-column field='lastName' headerText='Last Name'></e-column>
+        <e-column field='email' headerText='Email'></e-column>
+        <e-column field='gender' headerText='Gender'></e-column>
+        <e-column field='id' headerText='Actions' textAlign='Left' allowFiltering="false" width="160">
+            <ng-template #template let-data>
+              <a href="javascript:void(0)" (click)="viewDetails(data)"><span class="badge badge-light p-2">DETAILS</span></a>
+              &nbsp;
+              <a href="javascript:void(0)" (click)="delete(data)"><span class="badge badge-danger p-2">REMOVE</span></a>
+            </ng-template>
+          </e-column>
+    </e-columns>
+</ejs-grid>
