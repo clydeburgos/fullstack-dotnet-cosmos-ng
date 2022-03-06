@@ -1,8 +1,3 @@
-<!-- <div class="d-flex">
-  <input type="search" [(ngModel)]="searchKeyword"  placeholder="Search..." class="form-control w-50" /> &nbsp;
-  <button type="button" class="btn btn-sm btn-primary" (click)="search()">Search</button>
-</div> -->
-<br />
 <div *ngIf="isFetching" class="alert alert-secondary">Loading data, please wait...</div>
 <ejs-grid id="customerGrid" #customerGrid width="100%"
     [dataSource]="customers" [allowPaging]="true" [allowSorting]="true" [allowFiltering]="true" [pageSettings]="pageSettings" [filterSettings]='filterOptions' 

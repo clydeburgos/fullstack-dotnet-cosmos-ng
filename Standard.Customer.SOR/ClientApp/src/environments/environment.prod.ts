@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://localhost:44329'
+  apiUrl: 'https://customer-sor.azurewebsites.net'
 };

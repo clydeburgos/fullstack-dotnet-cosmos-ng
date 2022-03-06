@@ -59,3 +59,9 @@ Standard.Customer.Infrastructure/obj/Debug/netstandard2.1/Standard.Customer.Infr
 Standard.Customer.Infrastructure/obj/Debug/netstandard2.1/Standard.Customer.Infrastructure.dll
 Standard.Customer.Infrastructure/obj/Debug/netstandard2.1/Standard.Customer.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
 Standard.Customer.Infrastructure/obj/Debug/netstandard2.1/Standard.Customer.Infrastructure.pdb
+/Standard.Customer.Infrastructure/obj/Release/netstandard2.1
+/Standard.Customer.Infrastructure/bin/Release/netstandard2.1
+/Standard.Customer.Domain/obj/Release/netstandard2.1
+/Standard.Customer.Domain/bin/Release/netstandard2.1
+/Standard.Customer.Application/obj/Release/netstandard2.1
+/Standard.Customer.Application/bin/Release/netstandard2.1

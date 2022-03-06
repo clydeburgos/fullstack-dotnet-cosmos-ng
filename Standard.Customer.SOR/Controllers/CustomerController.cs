@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Standard.Customer.Application;
 using Standard.Customer.Domain;
 using Standard.Customer.Domain.DTO;
-using Standard.Customer.SOR.Models.Responses;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

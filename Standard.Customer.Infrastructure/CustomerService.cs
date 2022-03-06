@@ -1,18 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Standard.Customer.Application;
 using Standard.Customer.Domain;
-using Standard.Customer.Domain.DTO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.Azure.Cosmos;
 using System.Threading.Tasks;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Standard.Customer.Domain.Config;
-using System.Text;
 
 namespace Standard.Customer.Infrastructure
 {
