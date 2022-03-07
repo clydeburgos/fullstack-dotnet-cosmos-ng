@@ -37,7 +37,7 @@ namespace Standard.Customer.Infrastructure
         {
             try
             {
-                ModelTransform(entity, creatType);
+                await ModelTransform(entity, creatType);
 
                 logger.LogInformation($"Saving data to CosmosDB");
 
@@ -167,17 +167,19 @@ namespace Standard.Customer.Infrastructure
 
             return false;
         }
-        private void ModelTransform(CustomerEntity entity, CreateType createType)
+        private async Task ModelTransform(CustomerEntity entity, CreateType createType)
         {
             // unique id will represent the id from json if it's migration
             entity.uniqueid = (createType == CreateType.Migrate ? entity.id : entity.uniqueid);
-            // we will use the id property to be the unique identifier on cosmos
-            // entity.id = Guid.NewGuid().ToString(); 
+            if (createType == CreateType.Create) {
+                int customerRecordCount = await CountRecords();
+                entity.uniqueid = (customerRecordCount + 1).ToString();
+            }
         }
 
         private string BuildSimpleQuery(string searchKeyword) {
             string whereQuery = !string.IsNullOrEmpty(searchKeyword) ? $"WHERE c.last_name LIKE '%{searchKeyword}%' OR c.first_name LIKE '%{searchKeyword}%' OR c.email LIKE '%{searchKeyword}%'" : string.Empty;
-            string query = @$"SELECT * FROM c { whereQuery } ORDER BY c.uniqueid";
+            string query = @$"SELECT * FROM c { whereQuery } ORDER BY c.uniqueid DESC";
             return query;
         }
         private string BuildSelectQuery(string searchKeyword, int? page, int pageSize = 20, string orderByColumn = "uniqueid", string orderBy = "ASC") 
@@ -196,7 +198,6 @@ namespace Standard.Customer.Infrastructure
             orderBy = orderBy.ToLower().Contains("desc") ? "DESC" : orderBy;
             return orderBy;
         }
-
         private string ColumnTransform(string orderByColumn)
         {
             orderByColumn = orderByColumn.ToLower().Contains("first_name") ? "firstName" : orderByColumn;
